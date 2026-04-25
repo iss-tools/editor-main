@@ -114,7 +114,9 @@ const classes = computed(() => ({
   &.btn-block {
     width: 100%;
   }
-
+  &.p0 {
+    padding: 0;
+  }
   &.btn-disabled,
   &.btn-loading {
     opacity: 0.6;

@@ -11,22 +11,11 @@ export default {
 Plait 使用 JSON 格式存储白板元素，每个元素包含 id,angle,opacity,points,shape,strokeWidth,text,type,layout,data,topic,children等属性。
 
 元素类型包括：
-- rectangle: 矩形
-- ellipse: 椭圆
-- diamond: 趣形
-- arrow-line: 箭头
-- text: 文本
-- line: 线条
-- group: 分组
 - mind: 思维导图
-- freehand: 自由手绘
 - mind_child: 思维导图子节点
-- image: 图片
-- geometry: 几何图形
-- paragraph: 段落
 
 ## 输出要求
-- 仅输出 JSON 数组。
+- 仅输出 JSON 对象。
 - 确保所有元素都有唯一的 id
 - 元素位置合理布局
 - 使用适当的样式和颜色
@@ -61,7 +50,14 @@ Plait 使用 JSON 格式存储白板元素，每个元素包含 id,angle,opacity
               "type": "paragraph"
             }
           },
-          "children": []
+          "children": [],
+          "layout": "right",
+      "points": [
+        [
+          20,
+          20
+        ]
+      ]
         }
       ],
       "layout": "right",

@@ -642,7 +642,7 @@ const handleApplyCode = (code: string) => {
               title="复制"
               @click="handleCopyUserMessage(msg.id, msg.content)"
               :disabled="!msg.content?.trim()"
-              class="h-7 w-7 flex-shrink-0"
+              class="h-7 w-7 flex-shrink-0 p0"
             >
               <Check
                 v-if="copiedMessages.has(msg.id)"
@@ -930,7 +930,7 @@ const handleApplyCode = (code: string) => {
               title="上传图片"
               @click="handleImageUpload"
               :disabled="isStreaming || isProcessingFile"
-              class="h-8 w-8"
+              class="h-8 w-8 p0"
             >
               <ImagePlus class="h-4 w-4" />
             </Button>
@@ -940,7 +940,7 @@ const handleApplyCode = (code: string) => {
               title="上传文档 (docx, txt, md)"
               @click="handleDocumentUpload"
               :disabled="isStreaming || isProcessingFile"
-              class="h-8 w-8"
+              class="h-8 w-8 p0"
             >
               <FileText class="h-4 w-4" />
             </Button>
@@ -950,7 +950,7 @@ const handleApplyCode = (code: string) => {
               title="添加网址链接"
               @click="() => (showUrlInput = !showUrlInput)"
               :disabled="isStreaming || isProcessingFile || isParsingUrl"
-              class="h-8 w-8"
+              class="h-8 w-8 p0"
             >
               <Link class="h-4 w-4" />
             </Button>
