@@ -1,0 +1,759 @@
+// SmartEditor 组件样式
+// 引入全局变量
+@use './variables.scss' as *;
+@use 'sass:color';
+
+// ============================================
+// CSS 变量定义（主题系统）
+// ============================================
+:root {
+  --primary: #6c63ff;
+  --secondary: #00c4cc;
+  --accent: #ff6b6b;
+  --bg: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text: #1e1e1e;
+  --border: #e5e7eb;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --btn-bg: #f9fafb;
+  --btn-hover: #f3f4f6;
+  --card-bg: white;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --toast-bg: #111827;
+  --toast-text: white;
+  --modal-bg: white;
+  --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f1a;
+  --bg-secondary: #121220;
+  --text: #ffffff;
+  --border: #2d2d3a;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --btn-bg: #1e1e2e;
+  --btn-hover: #2d2d3a;
+  --card-bg: #1e1e2e;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --toast-bg: #1f2937;
+  --modal-bg: #1f2937;
+  --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+// ============================================
+// 基础设置
+// ============================================
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: var(--transition);
+  font-family: "Inter", "PingFang SC", "Roboto", sans-serif;
+  font-size: 14px;
+}
+
+.app-container {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+// ============================================
+// 顶部工具栏
+// ============================================
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  z-index: 100;
+  position: relative;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--primary);
+  cursor: pointer;
+  text-shadow: 0 2px 4px rgba(108, 99, 255, 0.3);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.file-type-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.file-type-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  }
+
+  &.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    width: 100%;
+  }
+}
+
+.user-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--secondary);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+.lang-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--modal-shadow);
+  min-width: 120px;
+  z-index: 1000;
+  animation: fadeInUp 0.3s ease-out;
+
+  a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--btn-hover);
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+// ============================================
+// 中间工具栏
+// ============================================
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 48px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  z-index: 99;
+  position: relative;
+}
+
+.project-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.project-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+
+.new-project-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+.filename-input {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  width: 160px;
+  font-size: 0.85rem;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+    outline: none;
+  }
+}
+
+.new-file-btn,
+.copy-new-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--secondary);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+.action-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.save-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+.export-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.export-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+.export-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--modal-shadow);
+  min-width: 160px;
+  z-index: 1000;
+  animation: fadeInUp 0.3s ease-out;
+
+  button {
+    width: 100%;
+    text-align: left;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--btn-hover);
+    }
+  }
+}
+
+.code-btn,
+.history-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--secondary);
+    color: white;
+    transform: scale(1.05);
+  }
+}
+
+// ============================================
+// 主内容区
+// ============================================
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.iframe-container {
+  flex: 1;
+  position: relative;
+  padding: 16px;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor-iframe {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--card-shadow);
+  overflow: auto;
+  resize: both;
+  min-width: 300px;
+  min-height: 200px;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.01);
+  }
+}
+
+// ============================================
+// 源码弹窗（模态框）
+// ============================================
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  width: 80%;
+  max-width: 1000px;
+  height: 70%;
+  background: var(--modal-bg);
+  border-radius: 8px;
+  box-shadow: var(--modal-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: rotate(90deg);
+    color: var(--accent);
+  }
+}
+
+.modal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 16px;
+}
+
+.code-editor {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow: auto;
+  resize: none;
+  color: var(--text);
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+    outline: none;
+  }
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &.apply {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+
+    &:hover {
+      background: color.adjust(#6c63ff, $lightness: -10%);
+    }
+  }
+}
+
+// ============================================
+// Toast 提示
+// ============================================
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 14px 24px;
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 3000;
+  backdrop-filter: blur(10px);
+  border-left: 4px solid var(--primary);
+
+  &.success {
+    border-left-color: #10b981;
+  }
+
+  &.error {
+    border-left-color: #ef4444;
+  }
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+// ============================================
+// 确认模态框
+// ============================================
+.confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.confirm-box {
+  background: var(--modal-bg);
+  border-radius: 8px;
+  box-shadow: var(--modal-shadow);
+  padding: 24px;
+  width: 400px;
+  text-align: center;
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.confirm-title {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.confirm-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &.cancel {
+    background: var(--btn-bg);
+    color: var(--text);
+
+    &:hover {
+      background: var(--btn-hover);
+    }
+  }
+
+  &.confirm {
+    background: var(--primary);
+    color: white;
+
+    &:hover {
+      background: color.adjust(#6c63ff, $lightness: -10%);
+    }
+  }
+}
+
+// ============================================
+// 响应式布局
+// ============================================
+@media (max-width: 768px) {
+  .header,
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .file-type-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .project-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .action-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .modal {
+    width: 95%;
+    height: 80%;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+}
