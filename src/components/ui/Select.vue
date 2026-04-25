@@ -140,11 +140,6 @@ const getInputValue = (e: Event): string => {
   return (e.target as HTMLInputElement).value;
 };
 
-// 获取 select 值
-const getSelectValue = (e: Event): string => {
-  return (e.target as HTMLSelectElement).value;
-};
-
 // 点击外部关闭下拉
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement;

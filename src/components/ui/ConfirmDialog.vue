@@ -1,20 +1,12 @@
 <script setup lang="ts">
-interface Props {
-  modelValue: boolean;
+defineProps<{
+  modelValue?: boolean;
   title?: string;
   message?: string;
   confirmText?: string;
   cancelText?: string;
   confirmType?: "primary" | "danger" | "success";
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  title: "确认操作",
-  message: "",
-  confirmText: "确定",
-  cancelText: "取消",
-  confirmType: "primary",
-});
+}>();
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void;

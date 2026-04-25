@@ -184,26 +184,61 @@
         :displayOrder="index"
       >
         <!-- 插槽透传：允许父组件自定义子节点的各个部分 -->
-        <template v-slot:leafNameDisplay="slotProps">
-          <slot name="leafNameDisplay" v-bind="slotProps" />
+        <template v-slot:leafNameDisplay="{ expanded, model, root }">
+          <slot
+            name="leafNameDisplay"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:addTreeNodeIcon="slotProps">
-          <slot name="addTreeNodeIcon" v-bind="slotProps" />
+        <template v-slot:addTreeNodeIcon="{ expanded, model, root }">
+          <slot
+            name="addTreeNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:addLeafNodeIcon="slotProps">
-          <slot name="addLeafNodeIcon" v-bind="slotProps" />
+        <template v-slot:addLeafNodeIcon="{ expanded, model, root }">
+          <slot
+            name="addLeafNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:editNodeIcon="slotProps">
-          <slot name="editNodeIcon" v-bind="slotProps" />
+        <template v-slot:editNodeIcon="{ expanded, model, root }">
+          <slot
+            name="editNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:delNodeIcon="slotProps">
-          <slot name="delNodeIcon" v-bind="slotProps" />
+        <template v-slot:delNodeIcon="{ expanded, model, root }">
+          <slot
+            name="delNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:leafNodeIcon="slotProps">
-          <slot name="leafNodeIcon" v-bind="slotProps" />
+        <template v-slot:leafNodeIcon="{ expanded, model, root }">
+          <slot
+            name="leafNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
-        <template v-slot:treeNodeIcon="slotProps">
-          <slot name="treeNodeIcon" v-bind="slotProps" />
+        <template v-slot:treeNodeIcon="{ expanded, model, root }">
+          <slot
+            name="treeNodeIcon"
+            :expanded="expanded"
+            :model="model"
+            :root="root"
+          />
         </template>
       </VueTreeList>
     </div>
@@ -211,21 +246,69 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  computed,
-  nextTick,
-  provide,
-  inject,
-  onBeforeUnmount,
-  type ComponentPublicInstance,
-} from "vue";
+import { ref, computed, nextTick, provide, inject, onBeforeUnmount } from "vue";
 import { TreeNode } from "./Tree";
 import { removeHandler } from "./tools";
 
 defineOptions({
   name: "VueTreeList",
 });
+
+// ==================== Slots 定义 ====================
+// 插槽参数类型
+interface LeafNameDisplaySlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface AddTreeNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface AddLeafNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface EditNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface DelNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface LeafNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+interface TreeNodeIconSlotProps {
+  expanded: boolean;
+  model: TreeNode;
+  root: TreeNode | undefined;
+}
+
+type VueTreeListSlots = {
+  leafNameDisplay?: (props: LeafNameDisplaySlotProps) => void;
+  addTreeNodeIcon?: (props: AddTreeNodeIconSlotProps) => void;
+  addLeafNodeIcon?: (props: AddLeafNodeIconSlotProps) => void;
+  editNodeIcon?: (props: EditNodeIconSlotProps) => void;
+  delNodeIcon?: (props: DelNodeIconSlotProps) => void;
+  leafNodeIcon?: (props: LeafNodeIconSlotProps) => void;
+  treeNodeIcon?: (props: TreeNodeIconSlotProps) => void;
+};
+
+const slots = defineSlots<VueTreeListSlots>();
 
 // ==================== Props 定义 ====================
 const props = withDefaults(
@@ -514,7 +597,7 @@ function addChild(isLeaf: boolean) {
   const node = new TreeNode({
     name,
     isLeaf,
-    displayOrder: props.displayOrder + 1,
+    displayOrder: props.displayOrder || 0 + 1,
   });
   props.model.addChildren(node);
   rootEmit("add-node", node);

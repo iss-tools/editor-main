@@ -24,9 +24,7 @@ import CodeBlock from "./CodeBlock.vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
 import { chatMessageStore, providerDb } from "../../db/index";
 import { AIProvider, ChatMessage, IFile } from "../../db/types";
-import { fetchReadability } from "@/api/FetchApi";
 import { chatWithAI, parseSSEStream, type ChatChunk } from "../../api/ChatApi";
-import { trimEnd, trimStart } from "lodash-es";
 // 类型定义
 interface Attachment {
   type: "image" | "document" | "url";
@@ -117,11 +115,6 @@ const isEmpty = ref(true);
 // 复制状态跟踪
 const copiedMessages = ref<Set<string>>(new Set());
 
-// 当前项目
-const currentProject = ref({
-  engineType: "drawio",
-});
-
 // 自动滚动到底部
 watch(
   () => messages.value,
@@ -204,9 +197,9 @@ const removeAttachment = (index: number) => {
 };
 
 // 打开 URL 链接
-const openUrl = (url: string) => {
-  window.open(url, "_blank", "noopener,noreferrer");
-};
+// const openUrl = (url: string) => {
+//   window.open(url, "_blank", "noopener,noreferrer");
+// };
 
 // 处理 URL 提交
 const handleUrlSubmit = async () => {
@@ -341,8 +334,8 @@ const handleSend = async () => {
 
   const userMsg = {
     role: "user" as const,
-    content: userContentParts.length > 1 ? userContentParts : message,
-  };
+    content: userContentParts.length > 1 ? (userContentParts as any) : message,
+  } as const;
 
   // 获取选中的 AI 供应商配置
   const providerConfig = selectedProvider.value
@@ -522,8 +515,8 @@ const getStatusDisplay = (status: string) => {
 };
 
 // 获取代码语言 - 直接返回空字符串，不区分格式
-const getCodeLanguage = () => {
-  return "";
+const getCodeLanguage = (): "xml" | "json" | "mermaid" | undefined => {
+  return undefined;
 };
 
 // 清除消息
@@ -590,7 +583,7 @@ const handleApplyCode = (code: string) => {
         <Button
           v-if="onCollapse"
           variant="ghost"
-          size="icon"
+          size="sm"
           title="收起面板"
           @click="onCollapse"
           :disabled="isStreaming"
@@ -599,7 +592,7 @@ const handleApplyCode = (code: string) => {
         </Button>
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           title="新建对话"
           @click="clearMessages"
           :disabled="isStreaming || messages.length === 0"
@@ -645,7 +638,7 @@ const handleApplyCode = (code: string) => {
             <Button
               v-if="msg.role === 'user'"
               variant="ghost"
-              size="icon"
+              size="sm"
               title="复制"
               @click="handleCopyUserMessage(msg.id, msg.content)"
               :disabled="!msg.content?.trim()"
@@ -740,7 +733,8 @@ const handleApplyCode = (code: string) => {
                   :is-streaming="msg.status === 'streaming'"
                   :duration="
                     msg.metrics?.endTime &&
-                    (msg.metrics.planEndTime || msg.metrics.startTime)
+                    msg.metrics.planEndTime &&
+                    msg.metrics.startTime
                       ? (msg.metrics.endTime -
                           (msg.metrics.planEndTime || msg.metrics.startTime)) /
                         1000
@@ -798,7 +792,7 @@ const handleApplyCode = (code: string) => {
                 msg.role === 'assistant' && msg.id === lastAssistantMessageId
               "
               variant="ghost"
-              size="icon"
+              size="sm"
               title="重新发送"
               :disabled="
                 isStreaming ||
@@ -932,7 +926,7 @@ const handleApplyCode = (code: string) => {
           <div class="flex gap-1">
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               title="上传图片"
               @click="handleImageUpload"
               :disabled="isStreaming || isProcessingFile"
@@ -942,7 +936,7 @@ const handleApplyCode = (code: string) => {
             </Button>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               title="上传文档 (docx, txt, md)"
               @click="handleDocumentUpload"
               :disabled="isStreaming || isProcessingFile"
@@ -952,7 +946,7 @@ const handleApplyCode = (code: string) => {
             </Button>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               title="添加网址链接"
               @click="() => (showUrlInput = !showUrlInput)"
               :disabled="isStreaming || isProcessingFile || isParsingUrl"
@@ -966,7 +960,7 @@ const handleApplyCode = (code: string) => {
               @select="handleProviderSelect"
             >
               <template #trigger>
-                <Button variant="outline" size="sm" class="h-8 px-2">
+                <Button variant="secondary" size="sm" class="h-8 px-2">
                   {{
                     selectedProvider
                       ? providerConfigs.find((p) => p.id === selectedProvider)
@@ -981,7 +975,7 @@ const handleApplyCode = (code: string) => {
                     v-for="config in providerConfigs"
                     :key="config.id"
                     class="dropdown-item"
-                    @click="handleProviderSelect(config.id)"
+                    @click="handleProviderSelect(String(config.id))"
                   >
                     {{ config.name }}
                   </div>

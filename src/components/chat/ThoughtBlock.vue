@@ -157,7 +157,7 @@ const handleCopy = async (e: MouseEvent) => {
 };
 
 // 渲染单个 Markdown 部分的组件
-const renderParts = (parts: MarkdownPart[] | undefined) => parts;
+// const _renderParts = (parts: MarkdownPart[] | undefined) => parts;
 
 const renderLineContent = (line: MarkdownLine) => {
   if (!line.content) return null;

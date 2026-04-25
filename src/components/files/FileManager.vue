@@ -18,10 +18,10 @@
       default-leaf-node-name="新建文件"
       :default-expanded="true"
     >
-      <template v-slot:leafNameDisplay="slotProps">
+      <template v-slot:leafNameDisplay="{ model }">
         <span>
-          {{ slotProps.model.name }}
-          <!-- <span class="muted">#{{ slotProps.model.id }}</span> -->
+          {{ model.name }}
+          <!-- <span class="muted">#{{ model.id }}</span> -->
         </span>
       </template>
       <template v-slot:addTreeNodeIcon>
@@ -36,10 +36,8 @@
       <template v-slot:delNodeIcon>
         <span class="icon">✂️</span>
       </template>
-      <template v-slot:leafNodeIcon="slotProps">
-        <span class="icon"
-          ><img :src="icons[slotProps.model.fileType]" alt=""
-        /></span>
+      <template #leafNodeIcon="{ model }">
+        <span class="icon"><img :src="icons[model.fileType]" alt="" /></span>
       </template>
       <template v-slot:treeNodeIcon>
         <span class="icon">📂</span>
@@ -56,30 +54,32 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { VueTreeList, Tree, TreeNode, TreeNodeData } from "../ui/tree";
-import { buildTree, buildTreeWithSearch, generateId } from "../ui/tree/tools";
+import { VueTreeList, Tree, TreeNode } from "../ui/tree";
+import { buildTreeWithSearch } from "../ui/tree/tools";
 import { directories, files } from "../../db";
-import FileCreateDialog from "./FileCreateDialog.vue";
+// import FileCreateDialog from "./FileCreateDialog.vue";
 import { editors } from "../../editors";
 const emit = defineEmits<{
   /** 点击节点时触发 */
   (e: "click", payload: Record<string, any>): void;
 }>();
 //保存目录和文件的数据库实例
-const newTree = ref<Record<string, unknown>>({});
+// const newTree = ref<Record<string, unknown>>({});
 const data = ref(new Tree([]).root);
 const nodes = ref<TreeNode[]>([]);
 const keyword = ref("");
 // 新建文件对话框相关
 const showFileDialog = ref(false);
 const pendingNode = ref<TreeNode | null>(null);
-const newFileData = ref<{ name: string; fileType: string; pid: string | null }>(
-  {
-    name: "",
-    fileType: "excalidraw",
-    pid: null,
-  },
-);
+const newFileData = ref<{
+  name: string;
+  fileType: string;
+  pid: string | undefined;
+}>({
+  name: "",
+  fileType: "excalidraw",
+  pid: undefined,
+});
 const icons: Record<string, string> = {};
 onMounted(async () => {
   data.value = new Tree(await getDirectoryAndFile()).root;
@@ -145,7 +145,7 @@ async function onAddNode(params: TreeNode) {
       newFileData.value = {
         name: params.name || "",
         fileType: "excalidraw",
-        pid: params.pid as string | null,
+        pid: params.pid as string | undefined,
       };
       showFileDialog.value = true;
       break;
@@ -169,12 +169,12 @@ async function handleFileCreate(data: { name: string; fileType: string }) {
       id: pendingNode.value.id,
       name: data.name,
       fileType: data.fileType,
-      pid: newFileData.value.pid,
+      pid: pendingNode.value.pid,
       content: "",
       displayOrder: nodes.value.length + 1,
     });
     // 刷新数据
-    data.value = new Tree(await getDirectoryAndFile()).root;
+    await filterNodes();
   }
   pendingNode.value = null;
   filterNodes();
@@ -207,7 +207,11 @@ function onDrop({
   updateDisplayOrder(node, src, target);
   console.log("drop", node, src, target);
 }
-function updateDisplayOrder(node, src, target) {
+function updateDisplayOrder(
+  node: TreeNode,
+  src: TreeNode | null,
+  _target: TreeNode,
+) {
   switch (node.isLeaf) {
     case true:
       files.update(
@@ -228,7 +232,7 @@ function updateDisplayOrder(node, src, target) {
     default:
       break;
   }
-  src.children.forEach((item, index) => {
+  src?.children?.forEach((item: any, index: any) => {
     switch (item.isLeaf) {
       case true:
         files.update({ displayOrder: index }, { id: item.id as string });

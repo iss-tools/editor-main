@@ -220,10 +220,10 @@ const queryModelsForProvider = async (index: number) => {
 };
 
 // 清空模型列表
-const clearModels = () => {
-  availableModels.value = [];
-  activeModelIndex.value = null;
-};
+// const _clearModels = () => {
+//   availableModels.value = [];
+//   activeModelIndex.value = null;
+// };
 </script>
 
 <style scoped>

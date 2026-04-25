@@ -1,13 +1,21 @@
 <script setup lang="ts">
-interface Props {
-  modelValue: string;
-  options: { label: string; value: string }[];
-  name?: string;
+interface Option {
+  label?: string;
+  value: string;
+  text?: string;
+  icon?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  name: "radio",
-});
+withDefaults(
+  defineProps<{
+    modelValue: string;
+    options: Option[];
+    name?: string;
+  }>(),
+  {
+    name: "",
+  },
+);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;

@@ -33,7 +33,7 @@ export class TreeNode {
   editNodeDisabled?: boolean;
   delNodeDisabled?: boolean;
   disabled?: boolean;
-  [key: string]: unknown;
+  [key: string]: any;
 
   constructor(data: TreeNodeData) {
     const { id, isLeaf } = data;
@@ -184,9 +184,9 @@ export class TreeNode {
 export class Tree {
   root: TreeNode;
 
-  constructor(data: TreeNodeData[]) {
+  constructor(data: TreeNodeData[] | TreeNode[]) {
     this.root = new TreeNode({ name: "root", isLeaf: false, id: 0 });
-    this.initNode(this.root, data);
+    this.initNode(this.root, data as TreeNodeData[]);
   }
 
   initNode(node: TreeNode, data: TreeNodeData[]): void {

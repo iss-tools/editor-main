@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onBeforeUnmount } from "vue";
+import { computed, onBeforeUnmount } from "vue";
 
 interface Props {
   modelValue?: string;

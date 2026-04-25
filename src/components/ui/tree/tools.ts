@@ -1,4 +1,4 @@
-import type { TreeNode } from "./Tree";
+import { TreeNode } from "./Tree";
 
 let handlerCache: EventListener | null = null;
 /**
@@ -71,7 +71,13 @@ export function buildTreeWithSearch(
   }
   const nodeMap = new Map<number | string, TreeNode>();
   nodes.forEach((node) => {
-    nodeMap.set(node.id, { ...node, children: [] });
+    const newNode = new TreeNode({
+      name: node.name,
+      isLeaf: node.isLeaf,
+      id: node.id,
+    });
+    Object.assign(newNode, node);
+    nodeMap.set(node.id, newNode);
   });
   // 标记哪些节点需要被保留（匹配或其祖先）
   const shouldKeep = new Set<number | string>();
@@ -125,7 +131,13 @@ export function buildTreeWithSearch(
 export function buildTree(nodes: TreeNode[]): TreeNode[] {
   const nodeMap = new Map<number | string, TreeNode>();
   nodes.forEach((node) => {
-    nodeMap.set(node.id, { ...node, children: [] });
+    const newNode = new TreeNode({
+      name: node.name,
+      isLeaf: node.isLeaf,
+      id: node.id,
+    });
+    Object.assign(newNode, node);
+    nodeMap.set(node.id, newNode);
   });
   const rootNodes: TreeNode[] = [];
   nodes.forEach((node) => {

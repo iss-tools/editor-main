@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watchEffect } from "vue";
-import { IFile } from "./db/types";
+import { IFile, IFileHistory } from "./db/types";
 import { EditorMessageBus } from "@iss-ai/window-message-bus";
 import Sidebar from "./components/Sidebar.vue";
 import { editors } from "./editors/index";
@@ -33,16 +33,16 @@ const info = ref<IFile>({
   fileType: "excalidraw",
   pid: null,
   displayOrder: 999,
-  createTime: null,
-  updateTime: null,
+  createTime: new Date(),
+  updateTime: new Date(),
 });
 // 侧边栏状态
-const activePanel = ref<string | null>(null);
+const activePanel = ref<string | undefined>(undefined);
 const panelText = ref("");
 const panelPosition = ref({ x: 0, y: 0, width: 0, height: 0 });
 
 // 历史版本
-const historyVersions = ref([]);
+const historyVersions = ref<IFileHistory[]>([]);
 
 // 导出格式
 const exportFormats = ref([
@@ -91,7 +91,7 @@ onMounted(() => {
 
 watchEffect(() => {
   if (currentFileType.value) {
-    let fmts = [];
+    let fmts: { format: string; label: string }[] = [];
     editors.forEach((ft) => {
       if (ft.value === currentFileType.value) {
         drawUrl.value = ft.iframe || "";
@@ -106,10 +106,20 @@ watchEffect(() => {
   }
 });
 
+// 辅助函数：获取版本内容
+const getVerContent = (ver: any): string => {
+  return ver.content || "";
+};
+
+// 辅助函数：获取版本时间
+const getVerTime = (ver: any): string => {
+  return ver.createTime ? new Date(ver.createTime).toLocaleString() : "";
+};
+
 const getHistory = async () => {
   console.log("getHistory", info.value);
   if (!info.value.id) {
-    showToast("⚠️ 请先保存文件以查看历史版本", "warning");
+    showToast("⚠️ 请先保存文件以查看历史版本", "info");
     return;
   }
   historyVersions.value =
@@ -146,7 +156,7 @@ const getThemeButtonText = () => {
 const selectLanguage = (lang: string) => {
   currentLang.value = lang;
   localStorage.setItem("lang", lang);
-  window.$changeLang(lang);
+  (window as any).$changeLang?.(lang);
   location.reload();
 };
 const notifyLanguageChange = () => {
@@ -154,7 +164,7 @@ const notifyLanguageChange = () => {
   let langs =
     editors.find((ft) => ft.value === currentFileType.value)?.languages || {};
   editorBus.setConfig(
-    { langCode: langs[lang] || lang },
+    { langCode: (langs as Record<string, string>)[lang] || lang },
     (document.getElementById("editor-iframe") as any).contentWindow,
   );
 };
@@ -179,7 +189,7 @@ const saveFile = async () => {
   let history = { ...result };
   delete history.id;
   delete history.createTime;
-  history.fileId = result.id;
+  (history as any).fileId = result.id!;
   fileHistories.save(history);
   showToast("✅ 保存成功", "success");
 };
@@ -205,9 +215,9 @@ const viewSource = () => {
   showCodeModal.value = true;
 };
 
-const closeCodeModal = () => {
-  showCodeModal.value = false;
-};
+// const closeCodeModal = () => {
+//   showCodeModal.value = false;
+// };
 
 const copyCode = () => {
   navigator.clipboard.writeText(codeContent.value).then(() => {
@@ -291,10 +301,10 @@ const handleExportSelect = (format: string) => {
   exportFile(format);
 };
 
-const thumnail = () => {
-  const win = (document.getElementById("editor-iframe") as any).contentWindow;
-  editorBus.thumnail({}, win);
-};
+// const thumnail = () => {
+//   const win = (document.getElementById("editor-iframe") as any).contentWindow;
+//   editorBus.thumnail({}, win);
+// };
 
 // 历史版本菜单选项点击
 const handleHistorySelect = (content: string) => {
@@ -327,14 +337,14 @@ const showPanel = (panelName: string, text: string) => {
 };
 
 // 获取面板索引
-const getPanelIndex = (panelName: string): number => {
-  const panels = ["manage", "template", "chat", "setting", "fixed", "backup"];
-  return panels.indexOf(panelName) + 1;
-};
+// const getPanelIndex = (panelName: string): number => {
+//   const panels = ["manage", "template", "chat", "setting", "fixed", "backup"];
+//   return panels.indexOf(panelName) + 1;
+// };
 
 // 关闭面板
 const closePanel = () => {
-  activePanel.value = null;
+  activePanel.value = undefined;
 };
 const setInfo = async (tmp: any) => {
   codeContent.value = tmp.content || "[]";
@@ -347,18 +357,18 @@ const setInfo = async (tmp: any) => {
   applyCode();
 };
 const createNewFile = (data?: Record<string, any>) => {
-  fileName.value = data.name || `Untitled`;
-  codeContent.value = data.content || "[]";
+  fileName.value = data?.name || `Untitled`;
+  codeContent.value = data?.content || "[]";
   currentFileType.value =
-    data.fileType || currentFileType.value || "excalidraw";
+    data?.fileType || currentFileType.value || "excalidraw";
   isDirty.value = false;
   info.value = {
     id: "",
     name: fileName.value,
     fileType: currentFileType.value,
-    pid: data.pid || null,
-    createTime: null,
-    updateTime: null,
+    pid: data?.pid ?? null,
+    createTime: data?.createTime || undefined,
+    updateTime: data?.updateTime || undefined,
     displayOrder: 999,
   };
   applyCode();
@@ -465,20 +475,15 @@ const applyChatCode = (code: any) => {
               🕒 历史版本
             </Button>
           </template>
-          <template #menu="{ close }">
+          <template #menu="{}">
             <div class="dropdown-menu-list history">
               <button
                 v-for="(ver, index) in historyVersions"
                 :key="index"
                 class="dropdown-item"
-                @click="
-                  () => {
-                    handleHistorySelect(ver.content);
-                    close();
-                  }
-                "
+                @click="handleHistorySelect(getVerContent(ver))"
               >
-                {{ new Date(ver.createTime).toLocaleString() }}
+                {{ getVerTime(ver) }}
               </button>
             </div>
           </template>

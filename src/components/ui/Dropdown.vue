@@ -47,10 +47,6 @@ const toggleMenu = () => {
   }
 };
 
-const handleSelect = (value: string) => {
-  emit("select", value);
-  closeMenu();
-};
 
 const handleClickOutside = (event: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
