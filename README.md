@@ -1,7 +1,25 @@
 # Editor Main
 
-一个基于 Vue 3 的多编辑器集成应用，支持多种编辑器类型的统一管理和切换。
+一个基于 Vue 3 的多编辑器集成应用，支持多种编辑器类型的统一管理和切换，统一管理文件存储在浏览器indexeddb中，支持github同步备份与下载。
 
+## 在线预览
+[https://editor-main.pages.dev/](https://editor-main.pages.dev/)
+
+### 截图
+`excalidraw`编辑器
+![excalidraw](./doc/image.png)
+
+`drawio`编辑器
+![drawio](./doc/image3.png)
+
+`markdown`编辑器，支持mermaid图表
+![markdown](./doc/image2.png)
+
+`plait`思维导图编辑器
+![plait](./doc/image1.png)
+
+`Demo`演示集成
+![Demo](./doc/image4.png)  
 ## 技术栈
 
 ### 核心框架
@@ -18,8 +36,8 @@
 ### 编辑器集成
 - [Excalidraw](https://excalidraw.com/) - 手绘风格绘图工具
 - [Draw.io](https://draw.io/) - 流程图和网络图编辑器
-- [Plait](https://github.com/plait-plait/plait) - 流程图、思维导图编辑器
-- [Markdown](https://markdown.cn/) - Markdown 文本编辑器
+- [Plait](https://github.com/worktile/plait) - 流程图、思维导图编辑器
+- [Markdown](https://github.com/Tencent/cherry-markdown) - Markdown 文本编辑器
 
 ### 状态管理与存储
 - [@vueuse/core](https://vueuse.org/) - Vue 组合式工具集
@@ -66,6 +84,7 @@ editor-main/
 │   │   ├── index.ts      # Dexie 数据库实例
 │   │   └── types.ts      # 数据库类型定义
 │   ├── editors/          # 编辑器集成
+|   │   ├── demo.ts       # Demo演示 编辑器
 │   │   ├── drawio.ts     # Draw.io 编辑器
 │   │   ├── excalidraw.ts # Excalidraw 编辑器
 │   │   ├── index.ts      # 编辑器索引
@@ -180,20 +199,49 @@ pnpm lint
 添加新编辑器需要以下步骤：
 
 1. 在 `src/editors/` 目录下创建新的编辑器配置文件
-2. 实现编辑器接口（包含 `value`, `label`, `iframe`, `prompt`, `format` 等属性）
+2. 配置文件（包含 `value`, `label`, `iframe`, `prompt`, `format` ,`prompt`等属性）
 3. 在 `src/editors/index.ts` 中导出新编辑器
+4. 集成`@iss-ai/window-message-bus`,实现跨窗口通信并监听消息
+5. 详细Demo参考`src/editors/demo.ts`，对应demo项目`example/`
 
 示例编辑器结构：
-
 ```typescript
 export default {
-  value: 'my-editor',
-  label: 'My Editor',
-  iframe: '/editors/my-editor.html',
-  prompt: '',
-  format: ['png', 'svg'],
-} as const;
+  text: "Demo",
+  value: "demo",
+  icon: "",
+  iframe: "http://localhost:5174/",
+  format: ["json"],
+  languages: {},
+  prompt: `你是 Demo 文本生成助手，生成文本`,
+};
 ```
+示例消息集成:
+```typescript
+import {
+  EditorMessageBus,
+  type EditorConfig,
+} from "@iss-ai/window-message-bus";
+// 创建 EditorMessageBus 实例用于与外部通信
+const editorBus = new EditorMessageBus({
+  sourceId: "editor-main-demo",
+  debug: true,
+});
+const sendReadyMessage = () => {
+  editorBus.isReady({ version: "0.0.1" });
+  addLog("SEND", "isReady: 0.0.1");
+};
+// 生命周期钩子
+onMounted(() => {
+  // 发送 ready 消息
+  sendReadyMessage();
+  // 设置事件监听器
+  editorBus.onSetData(handleSetData);
+  editorBus.onSetConfig(handleSetConfig);
+  editorBus.onExport(handleExportMessage);
+});
+```
+
 
 ## 依赖说明
 
