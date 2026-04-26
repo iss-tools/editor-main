@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AboutPanel: typeof import('./components/about/AboutPanel.vue')['default']
     AIProviderConfig: typeof import('./components/chat/AIProviderConfig.vue')['default']
     Button: typeof import('./components/ui/Button.vue')['default']
     ChatPanel: typeof import('./components/chat/ChatPanel.vue')['default']
@@ -25,6 +26,7 @@ declare module 'vue' {
     Radio: typeof import('./components/ui/Radio.vue')['default']
     Select: typeof import('./components/ui/Select.vue')['default']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
+    SyncPanel: typeof import('./components/sync/SyncPanel.vue')['default']
     ThoughtBlock: typeof import('./components/chat/ThoughtBlock.vue')['default']
     Toast: typeof import('./components/ui/Toast.vue')['default']
     VueTreeList: typeof import('./components/ui/tree/VueTreeList.vue')['default']

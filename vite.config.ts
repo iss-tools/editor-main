@@ -21,6 +21,7 @@ async function translate(text: string[], to: string) {
       body: JSON.stringify(body),
     });
     if (!response.ok) {
+      return [];
       // throw new Error(`HTTP Error! Status: ${response.status}`)
     }
     const result = await response.json();
