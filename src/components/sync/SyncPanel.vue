@@ -233,6 +233,73 @@ async function handleExport() {
     );
   }
 }
+
+// 导入 JSON 文件
+const fileInputRef = ref<HTMLInputElement | null>(null);
+
+async function handleImportJson() {
+  fileInputRef.value?.click();
+}
+
+async function handleFileChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  loading.value = true;
+  try {
+    // 读取文件内容
+    const reader = new FileReader();
+    const fileContent = await new Promise<string>((resolve, reject) => {
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        resolve(content);
+      };
+      reader.onerror = () => reject(new Error("文件读取失败"));
+      reader.readAsText(file);
+    });
+
+    // 解析 JSON
+    const data = JSON.parse(fileContent);
+    if (!data.directories || !data.files) {
+      throw new Error("JSON 格式不正确，缺少 directories 或 files 字段");
+    }
+
+    // 清空现有数据
+    const allDirs = await directories.getList({});
+    for (const dir of allDirs) {
+      if (dir.id) await directories.delete({ id: dir.id });
+    }
+    const allFiles = await files.getList({});
+    for (const file of allFiles) {
+      if (file.id) await files.delete({ id: file.id });
+    }
+
+    // 导入新数据到数据库
+    for (const dir of data.directories || []) {
+      await directories.save(dir);
+    }
+    for (const file of data.files || []) {
+      await files.save(file);
+    }
+
+    setStatus(
+      `导入成功！导入了 ${data.directories?.length || 0} 个目录，${data.files?.length || 0} 个文件到数据库`,
+      "success",
+    );
+  } catch (error) {
+    setStatus(
+      `导入失败：${error instanceof Error ? error.message : "未知错误"}`,
+      "error",
+    );
+  } finally {
+    loading.value = false;
+    // 清空文件选择，允许重复选择同一文件
+    if (fileInputRef.value) {
+      fileInputRef.value.value = "";
+    }
+  }
+}
 </script>
 
 <template>
@@ -318,6 +385,23 @@ async function handleExport() {
         >
           导出 JSON
         </button>
+
+        <button
+          @click="handleImportJson"
+          class="btn btn-info"
+          :disabled="loading"
+        >
+          <span v-if="loading">导入中...</span>
+          <span v-else>📁 导入 JSON</span>
+        </button>
+
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept=".json"
+          style="display: none"
+          @change="handleFileChange"
+        />
       </div>
     </div>
 
