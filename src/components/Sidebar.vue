@@ -16,7 +16,8 @@ const emit = defineEmits(["panel-toggle"]);
 // 菜单项配置
 const menuItems = [
   { key: "manage", label: "文件管理" },
-  { key: "chat", label: "AI生成" },
+  { key: "chat", label: "AI 生成" },
+  { key: "sync", label: "同步" },
   { key: "setting", label: "配置" },
 ];
 watchEffect(() => {
@@ -60,7 +61,7 @@ const handleItemClick = (k: string) => {
   margin: 16px 0px 0px;
   border-radius: 4px;
 
-  // 移除内联样式，使用CSS变量
+  // 移除内联样式，使用 CSS 变量
   &.sidebar {
     // --sidebar-width: 80px;
     --sidebar-padding: 6px;
@@ -87,7 +88,7 @@ const handleItemClick = (k: string) => {
   text-align: center;
   transition: all 0.2s ease;
 
-  // 使用CSS变量定义样式
+  // 使用 CSS 变量定义样式
   --item-hover-scale: 1.05;
   --item-active-scale: 0.95;
   --item-border-radius: 4px;

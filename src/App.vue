@@ -3,6 +3,7 @@ import { ref, onMounted, nextTick, watchEffect } from "vue";
 import { IFile, IFileHistory } from "./db/types";
 import { EditorMessageBus } from "@iss-ai/window-message-bus";
 import Sidebar from "./components/Sidebar.vue";
+import SyncPanel from "./components/sync/SyncPanel.vue";
 import { editors } from "./editors/index";
 import { fileHistories, files } from "./db";
 import { languages } from "./const/languages";
@@ -549,6 +550,7 @@ const applyChatCode = (code: any) => {
           @applyCode="applyChatCode"
           v-if="activePanel == 'chat'"
         />
+        <SyncPanel v-if="activePanel == 'sync'" />
         <AIProviderConfig v-if="activePanel == 'setting'" />
       </div>
     </div>
