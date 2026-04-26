@@ -4,6 +4,7 @@ import { IFile, IFileHistory } from "./db/types";
 import { EditorMessageBus } from "@iss-ai/window-message-bus";
 import Sidebar from "./components/Sidebar.vue";
 import SyncPanel from "./components/sync/SyncPanel.vue";
+import AboutPanel from "./components/about/AboutPanel.vue";
 import { editors } from "./editors/index";
 import { fileHistories, files } from "./db";
 import { languages } from "./const/languages";
@@ -158,7 +159,9 @@ const selectLanguage = (lang: string) => {
   currentLang.value = lang;
   localStorage.setItem("lang", lang);
   (window as any).$changeLang?.(lang);
-  location.reload();
+  setTimeout(() => {
+    location.reload();
+  }, 300);
 };
 const notifyLanguageChange = () => {
   let lang = currentLang.value;
@@ -552,6 +555,7 @@ const applyChatCode = (code: any) => {
         />
         <SyncPanel v-if="activePanel == 'sync'" />
         <AIProviderConfig v-if="activePanel == 'setting'" />
+        <AboutPanel v-if="activePanel == 'about'" />
       </div>
     </div>
 

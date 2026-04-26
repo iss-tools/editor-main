@@ -19,6 +19,7 @@ const menuItems = [
   { key: "chat", label: "AI 生成" },
   { key: "sync", label: "同步" },
   { key: "setting", label: "配置" },
+  { key: "about", label: "关于" },
 ];
 watchEffect(() => {
   active.value = activePanel ? true : false;
