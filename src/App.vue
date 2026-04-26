@@ -87,6 +87,9 @@ onMounted(() => {
     setTimeout(() => {
       codeContent.value = info.value.content || codeContent.value;
       applyCode();
+      if (currentFileType.value != "drawio") {
+        notifyLanguageChange();
+      }
     }, 200);
   });
 });
